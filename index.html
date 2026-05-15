@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+<meta name="theme-color" content="#2563eb" />
+<title>Standard Chartered Interview Prep — Yoke Keng</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config = { darkMode: 'class' };</script>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  body { -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { scrollbar-width: none; -ms-overflow-style: none; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+  .animate-fadeIn { animation: fadeIn 0.2s ease-out; }
+  html { scroll-behavior: smooth; }
+  #root:empty::after { content: "Loading..."; display: block; text-align: center; padding: 60px 20px; color: #94a3b8; font-size: 14px; }
+</style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+<div id="root"></div>
+
+<script type="text/babel" data-presets="env,react">
+const { useState, useEffect } = React;
+
+// ============== ICON COMPONENTS ==============
+const Icon = ({ d, size = 16, className = "" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>{d}</svg>
+);
+const ChevronDown = (p) => <Icon {...p} d={<polyline points="6 9 12 15 18 9"/>} />;
+const CheckCircle2 = (p) => <Icon {...p} d={<><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></>} />;
+const Circle = (p) => <Icon {...p} d={<circle cx="12" cy="12" r="10"/>} />;
+const Sparkles = (p) => <Icon {...p} d={<><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .962L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></>} />;
+const Target = (p) => <Icon {...p} d={<><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></>} />;
+const Building2 = (p) => <Icon {...p} d={<><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></>} />;
+const Sun = (p) => <Icon {...p} d={<><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></>} />;
+const Moon = (p) => <Icon {...p} d={<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>} />;
+const RotateCcw = (p) => <Icon {...p} d={<><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></>} />;
+const MessageSquare = (p) => <Icon {...p} d={<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>} />;
+const AlertTriangle = (p) => <Icon {...p} d={<><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></>} />;
+const Lightbulb = (p) => <Icon {...p} d={<><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></>} />;
+const Award = (p) => <Icon {...p} d={<><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/></>} />;
+
+// ============== DATA ==============
+const KEY_FACTS = [
+  { label: "Group CEO", value: "Bill Winters", icon: "👤" },
+  { label: "Malaysia Interim CEO", value: "Mushahid Syed (from 8 May 2026, also CFO)", icon: "🇲🇾" },
+  { label: "Outgoing Malaysia CEO", value: "Mak Joon Nien — first Malaysian CEO, 30 yrs at SC; joined CIMB", icon: "↪️" },
+  { label: "Malaysia Chairman", value: "Tan Sri Shahril Ridzuan (since Aug 2025)", icon: "🪑" },
+  { label: "Head, Wealth & Retail Banking MY", value: "Harmander Mahal", icon: "💼" },
+  { label: "Saadiq CEO Malaysia", value: "Bilal Parvaiz", icon: "🕌" },
+  { label: "Global Head, Bancassurance", value: "Gautam Duggal", icon: "🌍" },
+  { label: "Heritage in Malaysia", value: "150+ years — since 1875, first branch on Beach St, Penang", icon: "🏛️" },
+  { label: "Three Client Segments", value: "CIB, Wealth & Retail Banking (WRB), Ventures", icon: "🧭" },
+  { label: "Prudential Partnership", value: "25 years in Malaysia (since 2000); largest & longest pan-regional bancassurance franchise in Asia", icon: "🤝" },
+  { label: "Prudential Flagship Products", value: "PRUSignature Care, PRUSignature Plus, PRUSignature Infinite (regular-premium ILP)", icon: "📦" },
+  { label: "Saadiq Takaful Partner", value: "Prudential BSN Takaful (since 2012)", icon: "🌙" },
+  { label: "Key Takaful Products", value: "Premier Signature Takaful, Takafulink Dana Funds, Premier Legacy Beyond", icon: "✨" },
+  { label: "WRB Investment Commitment", value: "$1.5B over 5 yrs — RMs, advisory, digital, cross-border (announced Oct 2024)", icon: "💰" },
+  { label: "Group RoTE Target", value: "Approaching 13% by 2026 (raised from 12%)", icon: "📈" },
+  { label: "Q1 2026 Affluent NNM", value: "Record $18 billion net new money", icon: "🚀" },
+  { label: "FY25 Bancassurance Income", value: "+14% YoY in Q1'25; Wealth Solutions +24% YoY FY25", icon: "📊" },
+  { label: "Affluent AUM (end-2025)", value: "$447B (+22% YoY); 275k new-to-bank in 2025", icon: "💎" },
+  { label: "Brand Promise", value: '"Here for good"', icon: "🌟" },
+  { label: "Three Valued Behaviours", value: '"Do the right thing" • "Never settle" • "Better together"', icon: "🧡" }
+];
+
+const KILLER_MESSAGES = [
+  "My career has given me three angles on bancassurance — bank product, bank credit, and broker-side — and the people I'm negotiating against today are the people I used to negotiate with. That's a perspective most candidates don't bring.",
+  "I see the Prudential 25-year partnership as the cornerstone, but the next chapter is about depth — driving wallet share in the affluent base, sharpening the Saadiq Takaful proposition, and turning the $1.5B WRB investment into measurable bancassurance wins in Malaysia.",
+  "I've launched products across Life, General and Takaful, and I've sat through three NPAP-style regimes. I know how to move a paper through GPC, BNM and Risk, and I know how to keep Distribution happy while doing it. That's where I'd add value from day one."
+];
+
+const TIERS = [
+  {
+    id: 'tier1', label: 'Tier 1', title: 'Almost Certain', icon: '🔥',
+    accent: 'from-red-500 to-orange-500',
+    questions: [
+      {
+        q: "Walk me through your career — UOB 2006 to AEON now.",
+        critical: true,
+        a: `I'll keep this to the arc and the logic behind each move.
+
+I started at UOB in 2006 as a Credit Officer fresh out of UPM, evaluating CCRIS reports and credit applications. Within a year I was promoted to Assistant Manager in Bancassurance and Wealth Management. I spent five years building campaign reporting, launching Life and General insurance products, creating sales kits and training programs, and training new staff on the Bank Insurance Tracking System.
+
+In 2012 I joined AmBank as Assistant Manager because I wanted to broaden into Takaful and take ownership of partner-facing work. Over six years I drove new product development across Life, General and Takaful lines, prepared Group Product Committee approval papers, negotiated DAs and SLAs with insurance partners, built up the Bancassurance Specialist channel, and ran the Telemarketing business.
+
+In 2018 I moved to OCBC as Manager — my first full Manager title — to broaden my banking lens beyond insurance. I led NPAP submissions for commercial and business loan products, managed BNM fund programs and CGC schemes, developed the bank's Risk Informed Pricing policy, and authored the operating manuals for Commercial Property Loans.
+
+In 2022 I joined AEON Insurance Brokers as Manager on the InsureTech side, leading end-to-end product development for motor and non-motor lines, negotiating with insurance providers, and managing extended warranty programs.
+
+The arc is credit → bancassurance depth → commercial banking breadth → broker-side product. I'm now ready to bring all three lenses back into a bank — which is why I'm here.`,
+        why: "Frames a meandering CV as a deliberate skill-stacking narrative, ending with a 'why now / why here' hook.",
+        tip: "Practise this until you can deliver it in 90 seconds. Stop at the hook — don't keep talking."
+      },
+      {
+        q: "Why are you leaving AEON, and why Standard Chartered specifically?",
+        critical: true,
+        a: `Two parts to that.
+
+On AEON — it's been four good years. I've launched motor and non-motor products, built out partnerships, and learned the broker-side economics inside out. But I'm a bancassurance person at heart. My deepest work has always been bank-distributed insurance, and I want to return to that scale of customer base and complexity.
+
+On Standard Chartered specifically — three reasons.
+
+First, the Prudential partnership. Twenty-five years in Malaysia, the longest and largest pan-regional bancassurance franchise in Asia. The PRUSignature line — Care, Plus, Infinite — and the regular-premium ILP work is exactly the product depth I want to be part of.
+
+Second, the group strategy. Bill Winters has committed $1.5 billion over five years into Wealth and Retail Banking. Bancassurance sits inside Wealth Solutions, which grew 24% YoY in FY25, and Q1 2026 just delivered a record affluent net new money of $18 billion. I want to be on that growth curve.
+
+Third, the dual proposition. Standard Chartered has both conventional and Saadiq, with the Premier Signature Takaful proposition and the Prudential BSN Takaful relationship. My Takaful experience at AmBank, plus Mandarin and Bahasa fluency, fits the diverse Malaysian client base.
+
+I'm not running from AEON. I'm running toward this role.`,
+        why: "Specific facts demonstrate research without sounding like recital. Names names. Closes with a power line.",
+        tip: "The 'running toward' close is your signature line. Pause briefly before it."
+      },
+      {
+        q: "Tell me about a bancassurance product you developed end-to-end. Outcome?",
+        a: `STAR format.
+
+Situation: At AmBank around 2015, our Bancatakaful shelf had basic Family Takaful but nothing connecting to the wealth journey of Priority Muslim customers — a gap our peers were filling.
+
+Task: I was asked to develop a Takaful product proposition that would compete with Maybank Etiqa and CIMB Islamic and meet the segment's protection-plus-investment needs.
+
+Action: I led the feasibility study — segment sizing, competitor scan, gap analysis. Negotiated terms with our Takaful partner on coverage, contribution structure and surplus-sharing. Drafted the Group Product Committee approval paper covering risk, Shariah compliance, distribution and commercials. Worked with Distribution to design the sales kit and run-of-launch plan. Trained the Bancassurance Specialists and frontline RMs. Coordinated with Compliance on Shariah disclosure and BNM submission.
+
+Result: We launched on schedule. In the first 12 months the product contributed meaningfully to Bancatakaful fee income and outperformed the conventional Life equivalent in the Priority segment. More importantly, it created the Takaful muscle inside the team — every subsequent Takaful launch was faster because we'd built the playbook.
+
+The lesson I carried forward: end-to-end product work isn't really about the product. It's about building repeatable institutional capability.`,
+        why: "Clean STAR. Demonstrates Takaful credibility (relevant to Saadiq). Ends with a maturity statement that signals senior thinking.",
+        tip: "If pushed for specific numbers — be honest about confidentiality. 'I'd rather not share specifics from a previous employer' is fine."
+      },
+      {
+        q: "Describe a negotiation you led with an insurance provider. What was at stake?",
+        a: `STAR format.
+
+Situation: At AmBank we were renegotiating a Distribution Agreement with one of our Life partners. The existing terms were five years old, our volumes had grown significantly, and peers were getting better commission tiers and exclusivity protections.
+
+Task: I led the commercial negotiation alongside our Head of Bancassurance — owning the analytics, the partner-facing dialogue, and the SLA redesign.
+
+Action: I built a data pack showing our distribution value to them — volume, persistency, claim ratios, customer demographics — and benchmarked our terms against what other banks were getting from comparable Tier-1 insurers. I held three rounds of meetings: the first to set the tone (we want long-term but on fair terms), the second to negotiate the levers (commission tier, marketing co-fund, product exclusivity in two segments), the third to close. I kept Risk and Legal in the loop so we wouldn't get caught at GPC stage.
+
+Result: We secured improved commission tiers, a marketing co-fund that paid for two campaign launches, and exclusivity in a target product category. The SLA included clearer underwriting and claims turnaround commitments — which improved customer experience scores the following year.
+
+The takeaway: data wins these negotiations. Walking in with a clear quantification of what you bring to the partner shifts the power dynamic.`,
+        why: "Specific levers prove real-world experience. Maps directly to the JD line about negotiating with insurance providers.",
+        tip: "Have a 'most difficult moment' ready — e.g., 'When they pushed back on the marketing co-fund; I had to show them the ROI math.'"
+      },
+      {
+        q: "You've been at Manager / Assistant Manager level since 2012. Help me understand your progression.",
+        critical: true,
+        a: `I'll be direct with you on this.
+
+My progression has been horizontal more than vertical, and that's been deliberate. At each move I prioritised expanding what I could do over moving up by title. At UOB I built the bancassurance foundation. At AmBank I added Takaful, partner negotiation, and channel building. At OCBC I deliberately stepped sideways into commercial loans — I wanted to understand banking from the credit and product policy side, not just the insurance side. At AEON I've learned the broker-side economics and the InsureTech model.
+
+The result is that I can do things most bancassurance candidates at my level cannot — I can write a credit policy paper, run an NPAP submission, design a product P&L, negotiate a DA from both sides of the table, and bridge Conventional and Saadiq propositions. That breadth came at the cost of title speed.
+
+I'm aware of how that looks on paper. What I'd ask you to weigh is the quality of the experience, not the linear count of titles. And honestly, this role is where I want my next title move to happen — into a Senior Manager / Head of Bancassurance trajectory at a bank where the platform justifies the depth.`,
+        why: "Owns the issue head-on rather than dodging. Reframes 'stagnation' as 'deliberate breadth.' Ends with forward-looking ambition tied to the role.",
+        tip: "Do NOT sound defensive. Tone is everything. Practise in front of a mirror. Pause once or twice for effect."
+      }
+    ]
+  },
+  {
+    id: 'tier2', label: 'Tier 2', title: 'Highly Likely', icon: '⭐',
+    accent: 'from-amber-500 to-yellow-500',
+    questions: [
+      {
+        q: "How do you stay current with bancassurance regulations and market trends?",
+        a: `Three habits.
+
+First, regulatory tracking — I subscribe to BNM circulars and LIAM and MTA updates. The LIFE Framework evolution, the BNM concept paper consultations on Bancassurance and Bancatakaful distribution, and the Phased Liberalisation milestones are things I read as they come out, not when I need them.
+
+Second, partner-side intel from my current role. At AEON Insurance Brokers I sit on the partner side of the bancassurance equation, which means I see how insurers are positioning to banks — what they're willing to give, where the friction is, which product structures are getting traction. That's market intel I wouldn't have if I'd stayed bank-side the whole time.
+
+Third, competitor watching. I track product launches from major bancassurance players — Maybank-Etiqa, CIMB-Sun Life, Public Mutual-Allianz, HSBC-AIA, and of course Standard Chartered-Prudential. I read press releases and marketing materials; I notice when a product fills a gap and when it doesn't. PRUSignature Care and Plus are clearly responding to the cancer protection demand that's growing across affluent segments.
+
+The truth is bancassurance hasn't changed structurally that much — what changes is customer expectation around digital onboarding, advisory quality, and Takaful parity. That's what I'm watching most closely.`,
+        why: "Addresses the recency gap head-on. Demonstrates specific knowledge without lecturing.",
+        tip: "If you don't currently subscribe to BNM circulars, do it tonight: bnm.gov.my/regulations."
+      },
+      {
+        q: "Tell me about a time you navigated a difficult stakeholder.",
+        a: `STAR format.
+
+Situation: At OCBC I was developing the Risk Informed Pricing policy for individual borrowers. The model recommended differentiated pricing tiers based on credit risk profile — Risk supported it, but Sales/Distribution resisted because they were worried about losing volume on the higher-risk applicants.
+
+Task: Land the policy through Credit Committee without alienating Distribution.
+
+Action: Rather than push the policy through on Risk's authority, I sat down with the Head of Distribution and walked through the math. I showed how RIP would actually grow profitable volume — by being more competitive on low-risk applicants we were losing to peers, while pricing risk appropriately on the marginal cases. I co-built the implementation timing with Distribution so they could manage their pipeline. I also built in a six-month review checkpoint.
+
+Result: The policy went through cleanly at Credit Committee. The six-month review showed it was working — risk-adjusted return improved and Distribution didn't lose net volume on prime segment. More importantly, Risk and Distribution started co-owning pricing decisions rather than fighting them.
+
+The principle I work to: never push a policy through a stakeholder; build it with them.`,
+        why: "Demonstrates cross-functional EQ. The Sales vs Risk dynamic is exactly what you'll face on every bancassurance product launch.",
+        tip: "If asked 'what would you have done differently?' — say you'd have brought Distribution in even earlier, at design stage, not rollout stage."
+      },
+      {
+        q: "How do you approach building a business case for a new product?",
+        a: `I work through five layers, in order.
+
+Customer: Who is this for? What unmet need? What competitor product already serves it? I won't move past this layer unless I can describe the target segment in plain language and quantify the addressable opportunity.
+
+Product: What's the proposition — coverage, premium structure, riders, exclusions? What's the unit economics — pricing assumptions, expected persistency, claim ratio, commission structure?
+
+Distribution: Which channel sells this — Premier RMs, Priority RMs, Mass Affluent, Saadiq RMs, digital? What's the sales effort and conversion rate? Do we need new training, new collateral, system changes?
+
+Commercials: Five-year P&L — top-line, fee income, costs (one-time development, ongoing operational, commission), break-even, NPV and IRR. Sensitivities on the two biggest assumption levers.
+
+Risk and Regulatory: What are the risk concentrations? What do we tell BNM? Have we covered Shariah governance if applicable? What's the conduct risk exposure?
+
+I pressure-test each layer with the actual owners — Distribution head, Risk, Compliance, Finance — before going to GPC or NPAP. By the time the paper hits committee, every objection has already been heard and answered. That's the difference between a paper that lands and one that gets sent back for rework.`,
+        why: "Structured, senior-sounding, and specific to bancassurance language (Premier/Priority/Saadiq segments, GPC, NPAP).",
+        tip: "Be ready for: 'Walk me through how you'd pressure-test the persistency assumption.' Have a real example ready."
+      },
+      {
+        q: "You moved from Bancassurance at AmBank to commercial loans at OCBC, then to a broker. Help me understand those moves.",
+        critical: true,
+        a: `It was deliberate and I'll explain the logic.
+
+When I left AmBank in 2018, I'd been doing pure bancassurance for eleven years — UOB plus AmBank. I could see two paths: keep going deeper into bancassurance, or take three years to build the broader banking muscle I didn't have. I chose the second path because I believed a bancassurance product manager who can also read a credit policy paper and run an NPAP submission is more valuable than one who only knows insurance.
+
+OCBC gave me exactly that. I ran NPAP submissions for commercial property loans, built the Risk Informed Pricing policy, managed BNM fund programs, and authored operating manuals. I came out of those three years with a much stronger grasp of how the rest of the bank works — Treasury pricing, BNM fund mechanics, credit risk policy, business banking economics.
+
+The AEON move was different — it was the InsureTech opportunity. I wanted to see the insurance industry from the broker side because that's where the disruption is happening. Now I understand how brokers and insurers price, position, and partner — which is exactly the muscle this Product Manager role uses every time you sit across the table from Prudential.
+
+So the moves weren't drift. They were a deliberate three-stop loop: bancassurance depth → banking breadth → industry breadth → and now I'm coming back to bancassurance with all three perspectives.`,
+        why: "Owns the 'detour' framing and converts it into a strength. Closes with a strategic narrative that connects to the role.",
+        tip: "If pushed — 'three years on loans is a lot of bancassurance time lost' — agree partially. The trade-off was real; what you gained was breadth."
+      },
+      {
+        q: "Describe a product that didn't perform as expected. What did you learn?",
+        a: `STAR format.
+
+Situation: At AmBank we launched a telemarketing-driven General Insurance product bundled with credit cards. The thesis was that the credit card cross-sell base was large enough to drive volume, and telemarketing would be a low-cost distribution channel.
+
+Task: I owned the product launch and the 12-month performance review.
+
+Action: We launched on schedule with the right pricing and call scripts. But conversion came in well below forecast. I led the diagnostic — we listened to recorded calls, sat with the telemarketing team, analysed the customer base segment-by-segment. Two issues. First, the credit card base was actually wealthier than we'd assumed, and they perceived the product as too entry-level. Second, our call scripts were optimised for a generic mass-market pitch, not for the affluent base we were actually calling.
+
+I took two corrective actions: we re-segmented the call list to focus on the right customer profile, and we rewrote scripts with a more advisory tone. Conversion improved over the following two quarters, though it never hit the original forecast.
+
+Result: The product reached break-even later than planned. But the bigger lesson — and what I changed permanently in my approach — was the importance of testing the channel-customer fit before launching, not after. Since then I always run a controlled pilot or focus group before full launch on any product with a new distribution thesis.`,
+        why: "Shows real failure, real diagnosis, real correction, and a permanent change in approach. Doesn't pretend everything worked.",
+        tip: "Have a rough number ready if pressed — 'we launched expecting [X] conversion and got around [Y].'"
+      }
+    ]
+  },
+  {
+    id: 'tier3', label: 'Tier 3', title: 'Curveballs', icon: '🎯',
+    accent: 'from-purple-500 to-pink-500',
+    questions: [
+      {
+        q: "Your CV says RM 13,000. What's driving that, and is it negotiable?",
+        critical: true,
+        a: `The RM 13,000 number reflects my current package at AEON Insurance Brokers, plus a modest market adjustment.
+
+For this role at Standard Chartered — given the scope, the scale of the platform, the seniority implied by Mid-Senior level in the JD, and the responsibility for a 25-year Prudential partnership and the Saadiq Takaful proposition — my realistic expectation is in the RM 14,000 to RM 16,000 range monthly, with the exact number depending on total package: bonus structure, allowances, medical, leave, and any sign-on consideration.
+
+I'm flexible. If the role is right and the platform is right, I'm not going to lose the opportunity over a difference of a few thousand ringgit. I'd rather we land on a number that reflects fair market value for the scope, so both of us are happy six months in.`,
+        why: "Anchors above the CV number without seeming greedy. References role scope as justification. Closes with the 'platform first' line hiring managers respond to.",
+        tip: "Do NOT name a number lower than RM 14K. The CV figure is your floor, not your target. If they push back, ask to see the full package first."
+      },
+      {
+        q: "Your current role is broker-side — some hiring managers see that as a step away from core banking. Response?",
+        a: `I'd respond two ways.
+
+First, factually — it's not a step away, it's a different vantage point on the same industry. I've spent eleven years bank-side and four years broker-side. The bank-side experience is much deeper. The broker-side experience is much more recent. The combination is unusual.
+
+Second, the broker-side experience is operationally useful in this role. Every time a Standard Chartered product manager sits across the table from Prudential to negotiate a campaign, a new product, a commission revision — there's an insurance partner thinking about their economics, their distribution exclusivity, their loss ratios, their MTA constraints. I've sat in that chair. I know how they prepare for those meetings, what they're authorised to give, and what argument moves them. That's worth real money in DA renegotiations and product co-development cycles.
+
+I see broker-side as augmentation, not displacement. I'm coming back to bank-side because that's where my career belongs — but I'm coming back with a sharper eye for what the partner is doing on the other side of the deal.`,
+        why: "Doesn't get defensive. Reframes the perceived weakness as a sharp asset. The 'I've sat in that chair' line is concrete and memorable.",
+        tip: "Don't oversell — don't claim broker-side is BETTER than bank-side. Just claim it's complementary."
+      },
+      {
+        q: "What's your 3-5 year plan? Looking to grow into Senior Manager or Head of Bancassurance?",
+        a: `Honestly, yes — and I'd rather be open about it than pretend otherwise.
+
+In the next 12 to 18 months my focus is doing this job well. Building the trust, learning the SC platform, delivering on the bancassurance product agenda, getting close to the Prudential and Saadiq partner relationships. I don't think you grow into the next level by chasing the next level — you grow into it by being the obvious choice when it opens.
+
+In the three-to-five year window, I'd want to be in a Senior Manager / Head of Bancassurance trajectory — whether that's at SC Malaysia, the regional WRB hub in Hong Kong, or a similar role in Asia. The CFP gives me an advisory framing as well, so if there's an opportunity to take on broader wealth solutions scope beyond just bancassurance, that's interesting too.
+
+But I'm not interview-shopping for that next step. I'm here for the role you're hiring for, and I'd want to make it count for at least three years before the next move.`,
+        why: "Honest ambition with a credible 'I'll earn it' frame. The three-year commitment hedge addresses retention concern.",
+        tip: "Don't say 'I want your boss's job.' Even as a joke. Especially as a joke."
+      },
+      {
+        q: "If we don't offer you this role, what's your Plan B?",
+        a: `Two honest answers.
+
+Plan B is to stay at AEON for now. I'm not desperate to leave — I'm selective about moving. AEON has been good to me, and the broker-side learning continues to compound.
+
+Beyond that, I'm in early conversations with one other bank for a similar bancassurance role, but I'd want to be clear: my preference is here. The Prudential partnership, the Saadiq exposure, the Wealth and Retail Banking investment commitment from the group — that's the combination I'm looking for, and I don't see it replicated anywhere else in the Malaysian market right now.
+
+So Plan B exists, but Plan A is this role. I'd rather hear from you that you're seriously considering me than hear from me that I have other options.`,
+        why: "Avoids both desperation and arrogance. Signals you have options without bluffing. Closes by handing the ball back to them.",
+        tip: "Don't name specific competitor banks even if asked. 'Another major Malaysian bank with a similar bancassurance role' is enough."
+      },
+      {
+        q: "You have CFP and 18 years. Why not run your own advisory practice or move to an insurer-side senior role?",
+        a: `I've thought about both.
+
+The advisory practice route — I respect financial planners who go independent, but the CFP for me has always been a credential that adds depth to my product work, not a path to running my own book. I'm a product person, not a sales person. My energy goes into building things — products, propositions, frameworks — not into managing client portfolios.
+
+The insurer-side route is more interesting and I have considered it. The reason I'm here, on the bank side rather than insurer side, is that bancassurance is fundamentally a distribution game. The bank owns the customer. The bank decides which products get shelf space, which segments get prioritised, which campaigns get budget. That's where the leverage is. Sitting on the insurer side, I'd be one of several partners trying to win shelf space — interesting work, but less leverage than being the one deciding what gets on the shelf.
+
+This role gives me both — distribution leverage on the bank side, and a serious 25-year partnership to manage on the insurer side. That's the best of both worlds for someone with my background.`,
+        why: "Shows you've thought through career options seriously, not drifted into this application. The 'where the leverage is' framing signals strategic thinking.",
+        tip: "Don't badmouth advisory or insurer-side careers. Be respectful — you might end up there one day."
+      }
+    ]
+  },
+  {
+    id: 'tier4', label: 'Tier 4', title: 'Scenarios', icon: '🧩',
+    accent: 'from-blue-500 to-cyan-500',
+    questions: [
+      {
+        q: "Imagine launching a new regular-premium life insurance product through our branches. Walk me through pricing, segmentation, and sales enablement.",
+        critical: true,
+        a: `I'll take this as a hypothetical regular-premium ILP, similar in shape to PRUSignature Infinite, launched through SC Malaysia's WRB distribution.
+
+Segmentation first. I'd start by mapping the product to a primary segment — let's say emerging affluent and Priority customers between 30 and 50, in their wealth accumulation phase, with protection gaps. Secondary segment: Premier customers using it as a wealth and legacy planning tool. Saadiq variant would target the Bumi affluent segment in parallel, designed for Shariah equivalence on contribution structure and Hibah nomination.
+
+Pricing. Sum-assured tiers, contribution bands aligned to typical disposable income for the segment. Sensitivity testing on persistency — a 5% drop in 13-month persistency hits IRR materially, so pricing must be sustainable even under moderate persistency stress. Charge structure transparent enough to clear conduct risk review at NPAP.
+
+Sales enablement. Five components: an RM-facing product training pack that explains the product as a needs-based solution, not a sales pitch; a customer-facing needs analysis tool linking protection gap to product recommendation; a digital quote-and-illustration journey on SC Mobile; commission and incentive structure aligned to persistency (clawback for early lapse); and a launch campaign with co-marketing fund from the insurance partner.
+
+Go-to-market. Soft launch with two Priority branches for two weeks. Tweak based on RM feedback and customer objections. Full rollout in month two. First 90-day review on conversion, sum assured per policy, persistency leading indicator.
+
+The discipline I'd hold to: launch the smaller version that's right, not the bigger version that's almost-right.`,
+        why: "Demonstrates real product-management muscle. Specific to SC's distribution architecture. Closes with a maturity statement.",
+        tip: "Be ready for 'how would you price differently if IRR target was 18% vs 12%' — answer: tighter commission, leaner illustration, segment focus on lower-acquisition-cost channels."
+      },
+      {
+        q: "Branch RMs are pushing back on a Takaful launch — they say commission doesn't motivate them vs conventional. How do you resolve this?",
+        a: `This is a real-world scenario I'd take seriously, not dismiss. RM motivation drives sell-through, and if the frontline doesn't pitch the product, the launch dies regardless of how good the proposition is.
+
+I'd work three angles in parallel.
+
+First, validate the complaint with data. Is the commission actually lower, or perceived as lower because the sale cycle is longer? Pull the comparable Maybank Etiqa Takaful and CIMB Sun Life Takaful commission structures. If our commission is genuinely below market, that's a partner conversation — Prudential BSN Takaful needs to know we have a competitive friction point.
+
+Second, look at non-commission levers. Often the issue isn't pure commission — it's ease of sale. Is the illustration tool slower for Takaful? Is the underwriting turnaround longer? Are the product features harder to explain? If we fix the friction, we may not need to touch commission at all.
+
+Third, segment the RM base. Not every RM sells Takaful. The Saadiq RMs and a subset of conventional RMs serving Bumi clients are the natural distribution. I'd run a targeted incentive — a launch booster for those RMs specifically — rather than restructuring the whole commission grid, which would be expensive and create unintended consequences in conventional sales.
+
+The principle: never solve an RM problem by throwing more money at it without first checking whether the problem is actually motivation, or actually friction.`,
+        why: "Shows you don't panic-solve. Shows commercial sense (don't restructure commission grids lightly). Specific to SC Saadiq context.",
+        tip: "If asked 'what if it really is commission?' — say: 'Then I'd build a proper case for the partner with volume projections, take it to GPC, and renegotiate. But data first.'"
+      },
+      {
+        q: "Choose between a high-margin product with limited demand vs lower-margin with strong demand and strategic fit. How do you decide?",
+        a: `I'd decide based on three filters, in this order: strategic fit, scalability of demand, and margin.
+
+Strategic fit comes first. If a product strengthens our position with the affluent segment, deepens the Prudential partnership, or fills a Saadiq Takaful gap that aligns with where the bank is investing — that matters more than unit margin. Standard Chartered has explicitly chosen to invest $1.5 billion globally in WRB for cross-border affluent capability. Products that fit that thesis are worth more than their direct P&L suggests because they pull through related revenue — wealth solutions, deposits, cards.
+
+Second, scalability of demand. A high-margin product with limited demand has a ceiling. A lower-margin product with strong demand has compounding potential — every customer it brings in is a customer for cross-sell, retention, and lifetime value. I'd model both five years out, not one year out.
+
+Third, margin. Margin matters, but it's the third filter, not the first. A product launched purely for margin tends to fail because it's not solving a real customer problem and Distribution doesn't get behind it.
+
+In the scenario you described, my default would be the lower-margin, higher-demand product — assuming strategic fit is genuine. But I'd ask: can we engineer the high-margin product to have higher demand through positioning or distribution? If yes, we may not have to choose.`,
+        why: "Demonstrates senior product judgment — strategic fit before margin, lifetime value over unit margin. Ties to SC group strategy. Refuses the false binary at the end.",
+        tip: "The 'refuse the false binary' close is a strong move at this seniority level. Use it when you can."
+      }
+    ]
+  },
+  {
+    id: 'tier5', label: 'Tier 5', title: 'Ask Them', icon: '❓',
+    accent: 'from-emerald-500 to-teal-500',
+    isAskThem: true,
+    questions: [
+      { q: "What does success look like for this role in the first 12 months — both quantitatively and qualitatively?" },
+      { q: "How does SC's bancassurance strategy in Malaysia differ from the regional or group-level strategy? Where does Malaysia fit in the broader Asia footprint?" },
+      { q: "Beyond the Prudential partnership, is the partner mix evolving? Are there active discussions to bring in new providers in any segment?" },
+      { q: "What's the current split between conventional and Saadiq bancassurance, and where do you see the growth coming from in the next two years?" },
+      { q: "What are the biggest challenges the bancassurance team is facing right now — product gaps, distribution capacity, regulatory shifts, or something else?" },
+      { q: "How would you describe the working relationship between Product, Distribution, and Risk/Compliance here? Where does friction usually show up?" }
+    ]
+  }
+];
+
+// ============== APP ==============
+const STORAGE_PREFIX = 'stanchart';
+const totalQuestions = TIERS.filter(t => !t.isAskThem).reduce((sum, t) => sum + t.questions.length, 0);
+
+function App() {
+  const [activeTier, setActiveTier] = useState('facts');
+  const [openQ, setOpenQ] = useState(null);
+  const [memorized, setMemorized] = useState({});
+  const [darkMode, setDarkMode] = useState(false);
+  const [factsRevealed, setFactsRevealed] = useState({});
+
+  useEffect(() => {
+    try {
+      const m = JSON.parse(localStorage.getItem(`${STORAGE_PREFIX}_memorized`) || '{}');
+      const d = localStorage.getItem(`${STORAGE_PREFIX}_dark`) === 'true';
+      const f = JSON.parse(localStorage.getItem(`${STORAGE_PREFIX}_facts`) || '{}');
+      setMemorized(m); setDarkMode(d); setFactsRevealed(f);
+      if (d) document.documentElement.classList.add('dark');
+    } catch (e) {}
+  }, []);
+
+  const toggleMemorized = (id) => {
+    const next = { ...memorized, [id]: !memorized[id] };
+    setMemorized(next);
+    try { localStorage.setItem(`${STORAGE_PREFIX}_memorized`, JSON.stringify(next)); } catch (e) {}
+  };
+
+  const toggleFact = (i) => {
+    const next = { ...factsRevealed, [i]: !factsRevealed[i] };
+    setFactsRevealed(next);
+    try { localStorage.setItem(`${STORAGE_PREFIX}_facts`, JSON.stringify(next)); } catch (e) {}
+  };
+
+  const toggleDarkMode = () => {
+    const next = !darkMode;
+    setDarkMode(next);
+    if (next) document.documentElement.classList.add('dark');
+    else document.documentElement.classList.remove('dark');
+    try { localStorage.setItem(`${STORAGE_PREFIX}_dark`, String(next)); } catch (e) {}
+  };
+
+  const resetProgress = () => {
+    if (confirm('Reset all memorization progress?')) {
+      setMemorized({}); setFactsRevealed({});
+      try {
+        localStorage.removeItem(`${STORAGE_PREFIX}_memorized`);
+        localStorage.removeItem(`${STORAGE_PREFIX}_facts`);
+      } catch (e) {}
+    }
+  };
+
+  const memorizedCount = Object.values(memorized).filter(Boolean).length;
+  const progressPct = Math.round((memorizedCount / totalQuestions) * 100);
+
+  const navItems = [
+    { id: 'facts', label: 'Facts', icon: '🏛️' },
+    ...TIERS.map(t => ({ id: t.id, label: t.label, icon: t.icon })),
+    { id: 'killer', label: 'Killer', icon: '✨' }
+  ];
+
+  return (
+    <div>
+      {/* HEADER */}
+      <header className="sticky top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-sm">
+        <div className="max-w-2xl mx-auto px-4 py-3">
+          <div className="flex justify-between items-start">
+            <div>
+              <h1 className="text-lg font-bold tracking-tight">Standard Chartered Interview Prep</h1>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Product Manager, Bancassurance</p>
+            </div>
+            <div className="flex gap-1">
+              <button onClick={resetProgress} className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition" aria-label="Reset progress">
+                <RotateCcw className="w-4 h-4" />
+              </button>
+              <button onClick={toggleDarkMode} className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition" aria-label="Toggle dark mode">
+                {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              </button>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 mt-3">
+            <div className="flex-1 h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+              <div className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-500" style={{ width: `${progressPct}%` }}></div>
+            </div>
+            <span className="text-xs font-semibold text-slate-600 dark:text-slate-400 tabular-nums min-w-[70px] text-right">{memorizedCount}/{totalQuestions} ({progressPct}%)</span>
+          </div>
+        </div>
+        <div className="border-t border-slate-100 dark:border-slate-800 overflow-x-auto scrollbar-hide">
+          <div className="max-w-2xl mx-auto px-2 flex gap-1">
+            {navItems.map(item => (
+              <button
+                key={item.id}
+                onClick={() => { setActiveTier(item.id); setOpenQ(null); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                className={`flex items-center gap-1.5 px-3 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition ${activeTier === item.id ? 'border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400' : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
+              >
+                <span>{item.icon}</span>{item.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </header>
+
+      {/* MAIN */}
+      <main className="max-w-2xl mx-auto px-4 py-5 pb-24">
+        {activeTier === 'facts' && (
+          <div className="space-y-4">
+            <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-5 text-white shadow-lg">
+              <div className="flex items-start gap-3">
+                <Building2 size={24} />
+                <div>
+                  <h2 className="text-xl font-bold leading-tight">Key Facts to Memorize</h2>
+                  <p className="text-blue-100 text-sm mt-1">Tap to reveal. Drop these naturally into the conversation.</p>
+                </div>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              {KEY_FACTS.map((fact, i) => (
+                <button
+                  key={i}
+                  onClick={() => toggleFact(i)}
+                  className="text-left p-3.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-md transition-all active:scale-[0.98]"
+                >
+                  <div className="flex items-start gap-2.5">
+                    <span className="text-2xl">{fact.icon}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-0.5">{fact.label}</div>
+                      <div className={`text-sm font-medium leading-snug transition-all ${!factsRevealed[i] ? 'blur-sm select-none' : ''}`}>{fact.value}</div>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+            <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl p-4 mt-4">
+              <div className="flex gap-2.5">
+                <Lightbulb size={20} className="text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                <div className="text-sm text-amber-900 dark:text-amber-200 leading-relaxed">
+                  <strong>Study tip:</strong> Tap each card to reveal — then test yourself by tapping it again to blur. Aim for &lt;2 seconds recall on every fact before the interview.
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {TIERS.map(tier => activeTier === tier.id && (
+          <div key={tier.id} className="space-y-4">
+            <div className={`bg-gradient-to-br ${tier.accent} rounded-2xl p-5 text-white shadow-lg`}>
+              <div className="flex items-start gap-3">
+                <span className="text-3xl">{tier.icon}</span>
+                <div>
+                  <div className="text-sm font-medium text-white/80">{tier.label}</div>
+                  <h2 className="text-xl font-bold leading-tight">{tier.title}</h2>
+                </div>
+              </div>
+              <p className="text-white/90 text-sm mt-2">
+                {tier.id === 'tier1' && "You WILL face these. Master them first."}
+                {tier.id === 'tier2' && "Very probable. Have answers ready."}
+                {tier.id === 'tier3' && "Tougher questions. Stay composed."}
+                {tier.id === 'tier4' && "Practical tests of your thinking."}
+                {tier.isAskThem && "Strong candidates ask strong questions. Pick 2-3 to ask."}
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              {tier.questions.map((qa, idx) => {
+                const id = `${tier.id}-${idx}`;
+                const isOpen = openQ === id;
+                const isMem = memorized[id];
+
+                if (tier.isAskThem) {
+                  return (
+                    <div key={idx} className="bg-white dark:bg-slate-900 rounded-xl p-4 border border-emerald-200 dark:border-emerald-800 shadow-sm">
+                      <div className="flex gap-3">
+                        <div className="w-7 h-7 rounded-full bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center text-emerald-700 dark:text-emerald-300 font-bold text-sm flex-shrink-0">{idx + 1}</div>
+                        <p className="text-[15px] leading-relaxed font-medium flex-1">{qa.q}</p>
+                      </div>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div key={idx} className={`bg-white dark:bg-slate-900 rounded-xl border-2 shadow-sm transition-all ${isMem ? 'border-emerald-300 dark:border-emerald-700 bg-emerald-50/50 dark:bg-emerald-950/20' : 'border-slate-200 dark:border-slate-800'}`}>
+                    <button
+                      onClick={() => setOpenQ(isOpen ? null : id)}
+                      className="w-full text-left p-4 flex items-start gap-3"
+                    >
+                      <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${qa.critical ? 'bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 ring-2 ring-red-400' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'}`}>{idx + 1}</div>
+                      <div className="flex-1 min-w-0">
+                        {qa.critical && (
+                          <div className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-red-600 dark:text-red-400 mb-1">
+                            <AlertTriangle size={12} />Critical Question
+                          </div>
+                        )}
+                        <div className="text-[15px] leading-relaxed font-semibold pr-2">{qa.q}</div>
+                      </div>
+                      <ChevronDown size={20} className={`w-5 h-5 text-slate-400 flex-shrink-0 mt-1 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                    </button>
+
+                    {isOpen && (
+                      <div className="px-4 pb-4 space-y-3 animate-fadeIn">
+                        <div className="pl-10">
+                          <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 border-l-4 border-blue-500">
+                            <div className="flex items-center gap-1.5 mb-2">
+                              <MessageSquare size={14} className="text-blue-600 dark:text-blue-400" />
+                              <span className="text-[11px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Model Answer</span>
+                            </div>
+                            <div className="text-[15px] leading-[1.7] text-slate-800 dark:text-slate-200 whitespace-pre-line">{qa.a}</div>
+                          </div>
+
+                          {qa.tip && (
+                            <div className="mt-3 bg-amber-50 dark:bg-amber-950/30 rounded-lg p-3 border-l-4 border-amber-500">
+                              <div className="flex items-center gap-1.5 mb-1">
+                                <Lightbulb size={16} className="text-amber-700 dark:text-amber-400" />
+                                <span className="text-[11px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">Tip</span>
+                              </div>
+                              <div className="text-sm text-amber-900 dark:text-amber-200 leading-relaxed mt-0.5">{qa.tip}</div>
+                            </div>
+                          )}
+
+                          {qa.why && (
+                            <div className="mt-3 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg p-3 border-l-4 border-emerald-500">
+                              <div className="flex items-center gap-1.5 mb-1">
+                                <Award size={16} className="text-emerald-700 dark:text-emerald-400" />
+                                <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Why It Works</span>
+                              </div>
+                              <div className="text-sm text-emerald-900 dark:text-emerald-200 leading-relaxed mt-0.5">{qa.why}</div>
+                            </div>
+                          )}
+
+                          <button
+                            onClick={() => toggleMemorized(id)}
+                            className={`mt-3 w-full flex items-center justify-center gap-2 py-2.5 rounded-lg font-semibold text-sm transition-all ${isMem ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'}`}
+                          >
+                            {isMem ? <><CheckCircle2 size={16} />Memorized — tap to unmark</> : <><Circle size={16} />Mark as memorized</>}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+
+        {activeTier === 'killer' && (
+          <div className="space-y-4">
+            <div className="bg-gradient-to-br from-violet-600 to-fuchsia-600 rounded-2xl p-5 text-white shadow-lg">
+              <div className="flex items-start gap-3">
+                <Sparkles size={24} />
+                <div>
+                  <h2 className="text-xl font-bold leading-tight">Your 3 Killer Messages</h2>
+                  <p className="text-violet-100 text-sm mt-1">Weave these into the conversation. If you remember nothing else, remember these.</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              {KILLER_MESSAGES.map((msg, i) => (
+                <div key={i} className="bg-white dark:bg-slate-900 rounded-xl p-4 border-2 border-violet-200 dark:border-violet-800 shadow-sm">
+                  <div className="flex gap-3 items-start">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white font-bold text-sm shadow flex-shrink-0">{i + 1}</div>
+                    <p className="text-[15px] leading-relaxed font-medium flex-1 italic">"{msg}"</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-5 text-white mt-6">
+              <div className="font-bold text-lg mb-3 flex items-center gap-2">
+                <Target size={20} />Final Reminders
+              </div>
+              <ul className="space-y-2.5 text-sm leading-relaxed">
+                <li className="flex gap-2"><span className="text-emerald-400">✓</span> Be confident — you've earned the seat.</li>
+                <li className="flex gap-2"><span className="text-emerald-400">✓</span> Drop names naturally: Bill Winters, Harmander Mahal, Mushahid Syed, Bilal Parvaiz.</li>
+                <li className="flex gap-2"><span className="text-emerald-400">✓</span> Reference the Prudential 25-year partnership and $1.5B WRB investment.</li>
+                <li className="flex gap-2"><span className="text-emerald-400">✓</span> Pause two seconds before tough questions — silence is fine.</li>
+                <li className="flex gap-2"><span className="text-amber-400">⚠</span> Don't trash AEON when explaining why you're leaving — they've been good to you.</li>
+                <li className="flex gap-2"><span className="text-amber-400">⚠</span> Don't undersell yourself on salary — RM 14-16K is your real target, not RM 13K.</li>
+              </ul>
+              <div className="mt-5 pt-4 border-t border-white/10 text-center">
+                <p className="text-2xl font-bold bg-gradient-to-r from-amber-300 to-yellow-300 bg-clip-text text-transparent">加油 Yoke Keng!</p>
+                <p className="text-sm text-slate-300 mt-1">You've got this. 🚀</p>
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
